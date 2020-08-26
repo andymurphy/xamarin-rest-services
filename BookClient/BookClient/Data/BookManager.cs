@@ -12,7 +12,7 @@ namespace BookClient.Data
         // This is the string for the URL of the webapp service I created in an Azure sandbox.
         // I got the first half of it by using an echo command after setting up the Azure web app in the Azure Shell
         // I will probably need to change this as the Sandbox is only active for a limited time and I will need to set up a new one to test this app again.
-        const string Url = "https://bookserver32137.azurewebsites.net/api/books/";
+        const string Url = "https://bookserver16523.azurewebsites.net/api/books/";
 
         // Stores the token needed to sign in to the Azure web app
         private string authorizationKey;
@@ -64,16 +64,17 @@ namespace BookClient.Data
             return JsonConvert.DeserializeObject<Book>(await response.Content.ReadAsStringAsync());
         }
 
-        public Task Update(Book book)
-        {
-            // TODO: use PUT to update a book
-            throw new NotImplementedException();
+        public async Task Update(Book book)
+        {            
+            HttpClient client = await GetClient();
+            StringContent content = new StringContent(JsonConvert.SerializeObject(book), Encoding.UTF8, "application/json");
+            await client.PutAsync(Url + book.ISBN, content);
         }
 
-        public Task Delete(string isbn)
+        public async Task Delete(string isbn)
         {
-            // TODO: use DELETE to delete a book
-            throw new NotImplementedException();
+            HttpClient client = await GetClient();
+            await client.DeleteAsync(Url + isbn);
         }
     }
 }
